@@ -17,6 +17,7 @@ class MazeScene extends Phaser.Scene {
         this.mazeGraphics = null;
         this.cursors = null;
         this.player = null;
+        this.destinationMarker = null; // Add this line
         this.maze = [];
       }
     
@@ -28,6 +29,7 @@ class MazeScene extends Phaser.Scene {
         // Generate and draw maze
         this.generateMaze();
         this.createPlayer();
+        this.createDestination();
         this.createControls();
       }
 
@@ -145,6 +147,47 @@ class MazeScene extends Phaser.Scene {
                 };
               }
 
+         // Add this new method
+    createDestination() {
+        // Create a star shape or flag at the destination
+        const destX = (this.destination.x * gameOptions.tileSize) + (gameOptions.tileSize / 2);
+        const destY = (this.destination.y * gameOptions.tileSize) + (gameOptions.tileSize / 2);
+
+        // Create a star shape
+        this.destinationMarker = this.add.star(
+            destX,
+            destY,
+            5, // number of points
+            gameOptions.tileSize / 3, // inner radius
+            gameOptions.tileSize / 2, // outer radius
+            0xFFD700, // gold color
+            1 // alpha
+        );
+
+        // Add animation to make it more visible
+        this.tweens.add({
+            targets: this.destinationMarker,
+            scale: 1.2,
+            duration: 1000,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut'
+        });
+
+        // Add text label
+        this.add.text(
+            destX,
+            destY - gameOptions.tileSize,
+            'EXIT',
+            {
+                font: '12px Arial',
+                fill: '#FFD700',
+                align: 'center'
+            }
+        ).setOrigin(0.5);
+    }
+
+
    createControls() {
            // Create a container for controls with initial position
            const controlsContainer = this.add.container(
@@ -260,40 +303,71 @@ class MazeScene extends Phaser.Scene {
             let newY = this.player.posY;
           
             switch (direction) {
-              case "up":
-                newX -= 1;
-                break;
-              case "down":
-                newX += 1;
-                break;
-              case "left":
-                newY -= 1;
-                break;
-              case "right":
-                newY += 1;
-                break;
+                case "up":
+                    if (this.maze[this.player.posX - 1][this.player.posY] === 0) {
+                        newX--;
+                    }
+                    break;
+                case "down":
+                    if (this.maze[this.player.posX + 1][this.player.posY] === 0) {
+                        newX++;
+                    }
+                    break;
+                case "left":
+                    if (this.maze[this.player.posX][this.player.posY - 1] === 0) {
+                        newY--;
+                    }
+                    break;
+                case "right":
+                    if (this.maze[this.player.posX][this.player.posY + 1] === 0) {
+                        newY++;
+                    }
+                    break;
             }
           
-            if (
-              newX >= 0 &&
-              newX < gameOptions.mazeHeight &&
-              newY >= 0 &&
-              newY < gameOptions.mazeWidth &&
-              this.maze[newX][newY] === 0
-            ) {
-              this.player.posX = newX;
-              this.player.posY = newY;
-              this.player.setPosition(
-                newY * gameOptions.tileSize + gameOptions.tileSize / 2,
-                newX * gameOptions.tileSize + gameOptions.tileSize / 2
-              );
-          
-              // Check if reached destination
-              if (newX === this.destination.y && newY === this.destination.x) {
-                this.events.emit('gameWin');
-              }
+            if (newX !== this.player.posX || newY !== this.player.posY) {
+                this.player.posX = newX;
+                this.player.posY = newY;
+                this.player.x = this.player.posY * gameOptions.tileSize + gameOptions.tileSize / 2;
+                this.player.y = this.player.posX * gameOptions.tileSize + gameOptions.tileSize / 2;
+    
+                // Check win condition after movement
+                this.checkWinCondition();
             }
-          }
+        }
+
+        checkWinCondition() {
+            if (this.player.posX === this.destination.x && 
+                this.player.posY === this.destination.y) {
+                
+                // Create a victory effect
+                this.createVictoryEffect();
+                
+                // Emit the win event
+                this.game.events.emit('playerWin');
+            }
+        }
+
+  createVictoryEffect() {
+      // Create particle effect
+      const particles = this.add.particles(this.player.x, this.player.y, 'particle', {
+          speed: { min: -100, max: 100 },
+          scale: { start: 1, end: 0 },
+          blendMode: 'ADD',
+          lifespan: 1000,
+          quantity: 50
+      });
+  
+      // Stop and destroy the particles after 1 second
+      this.time.delayedCall(1000, () => {
+          particles.destroy();
+      });
+  }
+  
+   
+
+
+
 }
 
 export default MazeScene;

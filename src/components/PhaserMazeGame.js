@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import Phaser from "phaser";
 import { GameContainer, GameWrapper, StatItem, StatsPanel } from "./Style/GameContainer";
 import { formatTime } from "./Game/FormatTime";
-import MazeScene from "./Game/MazeScene";
 import { Config, gameOptions } from "./Game/Config";
 
 const PhaserMazeGame = () => {
@@ -15,32 +14,29 @@ const PhaserMazeGame = () => {
   const [score, setScore] = useState(0);
 
   useEffect(() => {
-
     // Calculate game dimensions
     const gameWidth = gameOptions.mazeWidth * gameOptions.tileSize;
-    const gameHeight = gameOptions.mazeHeight * gameOptions.tileSize + 100; // Extra space for controls
-
-    let player;
-    const destination = {
-      x: gameOptions.mazeWidth - 2,
-      y: gameOptions.mazeHeight - 2,
-    };
+    const gameHeight = gameOptions.mazeHeight * gameOptions.tileSize + 100;
 
     // Only create a new game instance if one doesn't exist
     if (!phaserGameRef.current) {
-      phaserGameRef.current = new Phaser.Game(Config(gameWidth, gameHeight, gameContainerRef));
+      const config = Config(gameWidth, gameHeight, gameContainerRef);
+      
+      // Add event handling to the config
+      config.callbacks = {
+        ...config.callbacks,
+        add: {
+          game: (game) => {
+            // Listen for custom events from the MazeScene
+            game.events.on('playerWin', handlePlayerWin);
+          }
+        }
+      };
+      
+      phaserGameRef.current = new Phaser.Game(config);
     }
-     // Timer logic
-    const timer = setInterval(() => {
-      if (!isPaused && timeLeft > 0) {
-        setTimeLeft(prev => prev - 1);
-      }
-    }, 1000);
-
-    
 
     return () => {
-      clearInterval(timer);
       if (phaserGameRef.current) {
         phaserGameRef.current.destroy(true);
         phaserGameRef.current = null;
@@ -48,10 +44,10 @@ const PhaserMazeGame = () => {
     };
   }, []);
 
-   // Timer effect
-   useEffect(() => {
+  // Timer effect
+  useEffect(() => {
     if (timeLeft <= 0) {
-      setGameOverMessage("Time's Up!");
+      handleGameOver();
       return;
     }
 
@@ -63,6 +59,28 @@ const PhaserMazeGame = () => {
       return () => clearInterval(timer);
     }
   }, [timeLeft, isPaused]);
+
+  const handlePlayerWin = () => {
+    setIsPaused(true);
+    setGameOverMessage("You Win! 🎉");
+    // Add bonus points based on remaining time
+    const timeBonus = Math.floor(timeLeft * 10);
+    setScore(prevScore => prevScore + timeBonus);
+  };
+
+  const handleGameOver = () => {
+    setIsPaused(true);
+    setGameOverMessage("Time's Up! Game Over 😢");
+  };
+
+  const handlePlayAgain = () => {
+    setTimeLeft(300);
+    setScore(0);
+    setCurrentLevel(1);
+    setGameOverMessage('');
+    setIsPaused(false);
+    window.location.reload();
+  };
 
   return (
     <GameContainer>
@@ -96,7 +114,22 @@ const PhaserMazeGame = () => {
           textAlign: 'center'
         }}>
           <h2>{gameOverMessage}</h2>
-          <button onClick={() => window.location.reload()}>
+          {gameOverMessage.includes('Win') && (
+            <p>Bonus points: {Math.floor(timeLeft * 10)}</p>
+          )}
+          <button 
+            onClick={handlePlayAgain}
+            style={{
+              padding: '10px 20px',
+              fontSize: '16px',
+              borderRadius: '5px',
+              background: '#4CAF50',
+              color: 'white',
+              border: 'none',
+              cursor: 'pointer',
+              marginTop: '10px'
+            }}
+          >
             Play Again
           </button>
         </div>
