@@ -1,11 +1,10 @@
-// src/components/MazeScene.js
 import Phaser from 'phaser';
 
 const gameOptions = {
-    mazeWidth: 21,
-    mazeHeight: 21,
-    tileSize: 20,
-  };
+    mazeWidth: 29,  // Any odd number ≥ 7
+    mazeHeight: 21, // Any odd number ≥ 7
+    tileSize: 30    // Adjust based on your display size
+};
 
 class MazeScene extends Phaser.Scene {
     constructor() {
@@ -142,16 +141,16 @@ class MazeScene extends Phaser.Scene {
                 this.player.posY = 1;
               
                 this.destination = {
-                  x: gameOptions.mazeWidth - 2,
-                  y: gameOptions.mazeHeight - 2
+                  x: gameOptions.mazeHeight - 2,
+                  y: gameOptions.mazeWidth - 2
                 };
               }
-
+              
          // Add this new method
     createDestination() {
         // Create a star shape or flag at the destination
-        const destX = (this.destination.x * gameOptions.tileSize) + (gameOptions.tileSize / 2);
-        const destY = (this.destination.y * gameOptions.tileSize) + (gameOptions.tileSize / 2);
+        const destY = (this.destination.x * gameOptions.tileSize) + (gameOptions.tileSize / 2);
+        const destX = (this.destination.y * gameOptions.tileSize) + (gameOptions.tileSize / 2);
 
         // Create a star shape
         this.destinationMarker = this.add.star(
@@ -262,8 +261,8 @@ class MazeScene extends Phaser.Scene {
          
            // Add reset position button
            const resetButton = this.add.text(
-             gameOptions.mazeWidth * gameOptions.tileSize - 60,
-             gameOptions.mazeHeight * gameOptions.tileSize + 10,
+             0,
+             gameOptions.mazeHeight * gameOptions.tileSize + 100,
              "Reset Controls",
              {
                font: "14px Arial",
@@ -276,8 +275,8 @@ class MazeScene extends Phaser.Scene {
            resetButton.on('pointerdown', () => {
              // Reset container position
              controlsContainer.setPosition(
-               50, 
-               gameOptions.mazeHeight * gameOptions.tileSize + 10
+               70, 
+               gameOptions.mazeHeight * gameOptions.tileSize + 30
              );
              
              // Clear saved position
@@ -337,6 +336,10 @@ class MazeScene extends Phaser.Scene {
         }
 
         checkWinCondition() {
+
+
+            console.log("Player position:", this.player.posX, this.player.posY);
+            console.log("Destination:", this.destination.x, this.destination.y);
             if (this.player.posX === this.destination.x && 
                 this.player.posY === this.destination.y) {
                 
@@ -363,10 +366,6 @@ class MazeScene extends Phaser.Scene {
           particles.destroy();
       });
   }
-  
-   
-
-
 
 }
 

@@ -15,8 +15,8 @@ const PhaserMazeGame = () => {
 
   useEffect(() => {
     // Calculate game dimensions
-    const gameWidth = gameOptions.mazeWidth * gameOptions.tileSize;
-    const gameHeight = gameOptions.mazeHeight * gameOptions.tileSize + 100;
+    const gameWidth = gameOptions.mazeWidth * gameOptions.tileSize + 800;
+    const gameHeight = gameOptions.mazeHeight * gameOptions.tileSize + 220;
 
     // Only create a new game instance if one doesn't exist
     if (!phaserGameRef.current) {
