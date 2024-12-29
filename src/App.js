@@ -18,20 +18,24 @@ function App() {
         </div>
 
         {/* Main Content Container */}
-        <div className="max-w-4xl mx-auto bg-white/10 backdrop-blur-lg rounded-xl shadow-2xl p-8">
+        <div className="max-w-7xl mx-auto">
           {/* Dynamic Content Based on View State */}
           <div className="transition-all duration-300 ease-in-out">
             {view === "menu" && (
-              <Menu 
-                onStartGame={() => setView("game")} 
-                onViewLeaderboard={() => setView("leaderboard")} 
-              />
+              <div className="max-w-4xl mx-auto bg-white/10 backdrop-blur-lg rounded-xl shadow-2xl p-8">
+                <Menu 
+                  onStartGame={() => setView("game")} 
+                  onViewLeaderboard={() => setView("leaderboard")} 
+                />
+              </div>
             )}
             {view === "game" && (
               <Game onExit={() => setView("menu")} />
             )}
             {view === "leaderboard" && (
-              <Leaderboard onExit={() => setView("menu")} />
+              <div className="max-w-4xl mx-auto bg-white/10 backdrop-blur-lg rounded-xl shadow-2xl p-8">
+                <Leaderboard onExit={() => setView("menu")} />
+              </div>
             )}
           </div>
         </div>

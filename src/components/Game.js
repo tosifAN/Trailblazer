@@ -1,15 +1,14 @@
 import React from "react";
 import PhaserMazeGame from "./PhaserMazeGame";
 
-function Game() {
+function Game({ onExit }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-black">
+    <div className="h-[calc(100vh-12rem)] flex flex-col">
       {/* Navigation Bar */}
       <nav className="bg-black/30 backdrop-blur-sm border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
-              {/* Logo/Title */}
               <div className="flex-shrink-0">
                 <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-300">
                   Maze Runner
@@ -36,87 +35,64 @@ function Game() {
         </div>
       </nav>
 
-      {/* Main Game Container */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          {/* Game Canvas Container */}
-          <div className="relative bg-black/40 backdrop-blur-md rounded-xl p-4 shadow-2xl 
-                          border border-white/10 overflow-hidden">
-            {/* Decorative Elements */}
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent"></div>
-            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-pink-500 to-transparent"></div>
-            
-            {/* Game Component */}
-            <div className="relative">
-              <PhaserMazeGame />
-            </div>
-          </div>
-
-          {/* Controls Section */}
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Game Controls */}
-            <div className="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
-              <h3 className="text-white font-semibold mb-4 flex items-center">
-                <svg className="w-5 h-5 mr-2 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
-                </svg>
-                Controls
-              </h3>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="flex items-center space-x-2 text-white/80">
-                  <kbd className="px-2 py-1 bg-white/10 rounded">↑</kbd>
-                  <span>Move Up</span>
-                </div>
-                <div className="flex items-center space-x-2 text-white/80">
-                  <kbd className="px-2 py-1 bg-white/10 rounded">↓</kbd>
-                  <span>Move Down</span>
-                </div>
-                <div className="flex items-center space-x-2 text-white/80">
-                  <kbd className="px-2 py-1 bg-white/10 rounded">←</kbd>
-                  <span>Move Left</span>
-                </div>
-                <div className="flex items-center space-x-2 text-white/80">
-                  <kbd className="px-2 py-1 bg-white/10 rounded">→</kbd>
-                  <span>Move Right</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Game Info */}
-            <div className="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
-              <h3 className="text-white font-semibold mb-4 flex items-center">
-                <svg className="w-5 h-5 mr-2 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Objective
-              </h3>
-              <p className="text-white/80 text-sm leading-relaxed">
-                Navigate through the maze to reach the exit. Collect power-ups and avoid obstacles. 
-                Complete the level as quickly as possible to earn higher scores.
-              </p>
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="mt-8 flex justify-center space-x-4">
-            <button className="px-6 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium rounded-lg 
-                             hover:scale-105 transition-all duration-200 hover:shadow-lg hover:shadow-purple-500/30 
-                             focus:ring-2 focus:ring-purple-400 focus:outline-none">
-              Restart Level
-            </button>
-            <button className="px-6 py-2 bg-white/10 backdrop-blur-sm text-white font-medium rounded-lg 
-                             hover:scale-105 transition-all duration-200 hover:bg-white/20 
-                             focus:ring-2 focus:ring-white/50 focus:outline-none">
-              Exit Game
-            </button>
-          </div>
-        </div>
+      {/* Main Game Content */}
+      <div className="flex-50 overflow-hidden p-8">
+      <div className="h-[90vh] w-[90vw] mx-auto rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+       <PhaserMazeGame />
+         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="mt-auto py-4 text-center text-white/50 text-sm">
-        <p>Press ESC to pause the game</p>
-      </footer>
+
+      {/* Controls Section */}
+      <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Controls */}
+        <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
+          <h3 className="text-white font-semibold mb-3">Controls</h3>
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            <div className="flex items-center space-x-2 text-white/80">
+              <kbd className="px-2 py-1 bg-white/10 rounded">↑</kbd>
+              <span>Move Up</span>
+            </div>
+            <div className="flex items-center space-x-2 text-white/80">
+              <kbd className="px-2 py-1 bg-white/10 rounded">↓</kbd>
+              <span>Move Down</span>
+            </div>
+            <div className="flex items-center space-x-2 text-white/80">
+              <kbd className="px-2 py-1 bg-white/10 rounded">←</kbd>
+              <span>Move Left</span>
+            </div>
+            <div className="flex items-center space-x-2 text-white/80">
+              <kbd className="px-2 py-1 bg-white/10 rounded">→</kbd>
+              <span>Move Right</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Game Info */}
+        <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
+          <h3 className="text-white font-semibold mb-3">Objective</h3>
+          <p className="text-white/80 text-sm">
+            Navigate through the maze to reach the exit. Collect power-ups and avoid obstacles. 
+            Complete the level as quickly as possible to earn higher scores.
+          </p>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10 flex items-center justify-center space-x-4">
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-6 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium rounded-lg 
+                      hover:scale-105 transition-all duration-200">
+            Restart Level
+          </button>
+          <button 
+            onClick={onExit}
+            className="px-6 py-2 bg-white/10 backdrop-blur-sm text-white font-medium rounded-lg 
+                      hover:scale-105 transition-all duration-200">
+            Exit Game
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

@@ -7,11 +7,13 @@ import styled from 'styled-components';
 const GameContainer = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   padding: 20px;
   background: #f0f0f0;
   min-height: 100vh;
+  width: 100%; // Add this
 `;
+
 
 const GameWrapper = styled.div`
   border: 2px solid #333;
