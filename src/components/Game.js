@@ -4,32 +4,42 @@ import { useNavigate } from "react-router-dom"; // Import the useNavigate hook
 
 
 function Game() {
+  const navigate = useNavigate();
+  const [playerDetails, setPlayerDetails] = useState(null); // Start with null
+  const [isLoading, setIsLoading] = useState(true); // Loading state
 
-  const navigate = useNavigate(); // Initialize useNavigate
-
-  // State to hold player details
-  const [playerDetails, setPlayerDetails] = useState(() => {
+  useEffect(() => {
     const savedDetails = localStorage.getItem("playerDetails");
-    return savedDetails ? JSON.parse(savedDetails) : {};
-  });
+    const savedPlayerDetails = sessionStorage.getItem("playerDetails");
 
-   // Function to handle updating player details in localStorage and state
-   const updatePlayerDetails = (newDetails) => {
-    // Update player details in localStorage
+    if (savedDetails && savedPlayerDetails) {
+      setPlayerDetails(JSON.parse(savedDetails));
+    } else {
+      navigate("/"); // Redirect if no details
+    }
+
+    setIsLoading(false); // Mark loading complete
+  }, [navigate]);
+
+  const updatePlayerDetails = (newDetails) => {
     localStorage.setItem("playerDetails", JSON.stringify(newDetails));
-
-    // Update state to reflect changes immediately
     setPlayerDetails(newDetails);
   };
 
-
-
-   // Exit game handler
-   const handleExit = () => {
-    localStorage.removeItem("playerDetails"); // Clear player details from localStorage
-    navigate("/"); // Redirect to the home page
+  const handleExit = () => {
+    localStorage.removeItem("playerDetails");
+    navigate("/");
   };
 
+  // Prevent rendering until loading is complete
+  if (isLoading) {
+    return null; // Optionally, render a loading spinner here
+  }
+
+  // Render only if playerDetails are available
+  if (!playerDetails) {
+    return null; // Safety measure, but it should redirect
+  }
   // Render player details dynamically
   return (
     <div className="h-[calc(100vh-12rem)] flex flex-col">

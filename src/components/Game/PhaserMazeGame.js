@@ -120,6 +120,8 @@ useEffect(() => {
       // Call updatePlayer with the extracted parameters
       await updatePlayer(playerID, requestBody);
     }
+    sessionStorage.removeItem("playerDetails");
+    localStorage.removeItem('playerDetails'); //remove existing player details
     setIsPaused(true);
     setGameOverMessage("Time's Up! Game Over 😢");
   };

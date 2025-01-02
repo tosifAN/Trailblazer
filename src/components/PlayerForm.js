@@ -61,7 +61,10 @@ const PlayerForm = () => {
     
     try {
       setIsSubmitting(true);
+      sessionStorage.removeItem("playerDetails");
+      localStorage.removeItem('playerDetails'); //remove existing player details
       localStorage.setItem("playerDetails", JSON.stringify(formData));
+      sessionStorage.setItem("playerDetails", JSON.stringify(formData));
       await savePlayer(
         formData.PlayerID,
         formData.PlayerEmailID,  
