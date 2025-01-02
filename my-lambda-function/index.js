@@ -82,7 +82,14 @@ app.get('/leaderboard', async (req, res) => {
             return a.PlayerTime - b.PlayerTime; // Ascending PlayerTime
         });
 
-        res.status(200).json(players);
+         // Limit to top 10 players
+         const topPlayers = players.slice(0, 10);
+
+        // Respond with top players and total player count
+        res.status(200).json({
+            topPlayers: topPlayers,
+            totalPlayers: players.length,
+        });
     } catch (error) {
         console.error('Error fetching data from DynamoDB:', error);
         res.status(500).json({ error: error.message });
