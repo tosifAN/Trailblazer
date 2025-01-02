@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { fetchLeaderboard } from "../api/gameAPI";
+import { Navigate } from "react-router-dom";
 
-const Leaderboard = ({ onExit }) => {
+const Leaderboard = () => {
   const [players, setPlayers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [timeFrame, setTimeFrame] = useState('all');
@@ -123,7 +124,7 @@ const Leaderboard = ({ onExit }) => {
         {/* Action Buttons */}
         <div className="mt-8 flex justify-center space-x-4">
           <button
-            onClick={onExit}
+            onClick={Navigate('/')}
             className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium rounded-lg
                      hover:scale-105 transition-all duration-200 hover:shadow-lg hover:shadow-purple-500/30
                      focus:outline-none focus:ring-2 focus:ring-purple-400"
@@ -154,7 +155,7 @@ const Leaderboard = ({ onExit }) => {
           </div>
           <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 text-center">
             <div className="text-2xl font-bold text-yellow-400">
-              {players.length > 0 ? formatTime(Math.min(...players.map(p => p.PlayerTime))) : "00:00"}
+            {players.length > 0 ? formatTime(players[0].PlayerTime) : "00:00"}
             </div>
             <div className="text-white/60 text-sm">Best Time</div>
           </div>
