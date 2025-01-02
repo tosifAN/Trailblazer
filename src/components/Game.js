@@ -1,7 +1,36 @@
-import React from "react";
-import PhaserMazeGame from "./PhaserMazeGame";
+import React, { useState, useEffect } from "react";
+import PhaserMazeGame from "./Game/PhaserMazeGame";
+import { useNavigate } from "react-router-dom"; // Import the useNavigate hook
 
-function Game({ onExit }) {
+
+function Game() {
+
+  const navigate = useNavigate(); // Initialize useNavigate
+
+  // State to hold player details
+  const [playerDetails, setPlayerDetails] = useState(() => {
+    const savedDetails = localStorage.getItem("playerDetails");
+    return savedDetails ? JSON.parse(savedDetails) : {};
+  });
+
+   // Function to handle updating player details in localStorage and state
+   const updatePlayerDetails = (newDetails) => {
+    // Update player details in localStorage
+    localStorage.setItem("playerDetails", JSON.stringify(newDetails));
+
+    // Update state to reflect changes immediately
+    setPlayerDetails(newDetails);
+  };
+
+
+
+   // Exit game handler
+   const handleExit = () => {
+    localStorage.removeItem("playerDetails"); // Clear player details from localStorage
+    navigate("/"); // Redirect to the home page
+  };
+
+  // Render player details dynamically
   return (
     <div className="h-[calc(100vh-12rem)] flex flex-col">
       {/* Navigation Bar */}
@@ -15,20 +44,20 @@ function Game({ onExit }) {
                 </h1>
               </div>
             </div>
-            
+
             {/* Game Stats */}
             <div className="flex items-center space-x-4">
+            <div className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm">
+                <span className="text-yellow-400 font-medium">Name: </span>
+                <span className="text-white">{playerDetails.PlayerName || "N/A"}</span>
+              </div>
               <div className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm">
                 <span className="text-yellow-400 font-medium">Level: </span>
-                <span className="text-white">1</span>
+                <span className="text-white">{playerDetails.PlayerLevel || "N/A"}</span>
               </div>
               <div className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm">
                 <span className="text-yellow-400 font-medium">Time: </span>
-                <span className="text-white">00:00</span>
-              </div>
-              <div className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm">
-                <span className="text-yellow-400 font-medium">Score: </span>
-                <span className="text-white">0</span>
+                <span className="text-white">{playerDetails.PlayerTime || "00:00"}</span>
               </div>
             </div>
           </div>
@@ -37,11 +66,10 @@ function Game({ onExit }) {
 
       {/* Main Game Content */}
       <div className="flex-50 overflow-hidden p-8">
-      <div className="h-[90vh] w-[90vw] mx-auto rounded-2xl overflow-hidden shadow-2xl border border-white/10">
-       <PhaserMazeGame />
-         </div>
+        <div className="h-[90vh] w-[90vw] mx-auto rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+          <PhaserMazeGame  updatePlayerDetails={updatePlayerDetails} />
+        </div>
       </div>
-
 
       {/* Controls Section */}
       <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -85,10 +113,9 @@ function Game({ onExit }) {
                       hover:scale-105 transition-all duration-200">
             Restart Level
           </button>
-          <button 
-            onClick={onExit}
-            className="px-6 py-2 bg-white/10 backdrop-blur-sm text-white font-medium rounded-lg 
-                      hover:scale-105 transition-all duration-200">
+          <button
+            onClick={handleExit}
+            className="px-6 py-2 bg-white/10 text-white rounded-lg">
             Exit Game
           </button>
         </div>

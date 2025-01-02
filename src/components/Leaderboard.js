@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
+import { fetchLeaderboard } from "../api/gameAPI";
 
 const Leaderboard = ({ onExit }) => {
-  const [scores, setScores] = useState([]);
+  const [players, setPlayers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [timeFrame, setTimeFrame] = useState('all'); // 'all', 'weekly', 'monthly'
+  const [timeFrame, setTimeFrame] = useState('all');
 
   useEffect(() => {
-    const fetchLeaderboard = async () => {
+    const fetchLeaderboarder = async () => {
       try {
-        const response = await fetch("https://<YOUR_API_GATEWAY_URL>/leaderboard");
-        const data = await response.json();
-        setScores(data);
+        const response = await fetchLeaderboard();
+        const data = response
+        console.log("Fetched leaderboard data:", data);
+        setPlayers(data);
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching leaderboard:", error);
@@ -18,8 +20,15 @@ const Leaderboard = ({ onExit }) => {
       }
     };
 
-    fetchLeaderboard();
+    fetchLeaderboarder();
   }, []);
+
+  // Function to format time in minutes and seconds
+  const formatTime = (timeInSeconds) => {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = timeInSeconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-black py-8 px-4">
@@ -63,13 +72,12 @@ const Leaderboard = ({ onExit }) => {
                   <tr className="bg-black/20">
                     <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">Rank</th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">Player</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">Score</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">Level</th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">Time</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">Date</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/10">
-                  {scores.map((score, index) => (
+                  {players.map((player, index) => (
                     <tr 
                       key={index}
                       className="hover:bg-white/5 transition-colors duration-150"
@@ -92,20 +100,17 @@ const Leaderboard = ({ onExit }) => {
                         <div className="flex items-center">
                           <div className="h-8 w-8 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
                             <span className="text-white font-medium">
-                              {score.PlayerID.charAt(0).toUpperCase()}
+                              {player.PlayerName.charAt(0).toUpperCase()}
                             </span>
                           </div>
-                          <span className="ml-3 text-white font-medium">{score.PlayerID}</span>
+                          <span className="ml-3 text-white font-medium">{player.PlayerName}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-white font-semibold">{score.Score}</span>
+                        <span className="text-white font-semibold">Level {player.PlayerLevel}</span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-white/80">
-                        {score.Time || "00:00"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-white/60">
-                        {new Date(score.Date || Date.now()).toLocaleDateString()}
+                        {formatTime(player.PlayerTime)}
                       </td>
                     </tr>
                   ))}
@@ -138,20 +143,20 @@ const Leaderboard = ({ onExit }) => {
         {/* Stats Summary */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold text-purple-400">{scores.length}</div>
+            <div className="text-2xl font-bold text-purple-400">{players.length}</div>
             <div className="text-white/60 text-sm">Total Players</div>
           </div>
           <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 text-center">
             <div className="text-2xl font-bold text-pink-400">
-              {scores.length > 0 ? Math.max(...scores.map(s => s.Score)) : 0}
+              {players.length > 0 ? Math.max(...players.map(p => p.PlayerLevel)) : 0}
             </div>
-            <div className="text-white/60 text-sm">Highest Score</div>
+            <div className="text-white/60 text-sm">Highest Level</div>
           </div>
           <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 text-center">
             <div className="text-2xl font-bold text-yellow-400">
-              {scores.length > 0 ? Math.round(scores.reduce((acc, curr) => acc + curr.Score, 0) / scores.length) : 0}
+              {players.length > 0 ? formatTime(Math.min(...players.map(p => p.PlayerTime))) : "00:00"}
             </div>
-            <div className="text-white/60 text-sm">Average Score</div>
+            <div className="text-white/60 text-sm">Best Time</div>
           </div>
         </div>
       </div>
