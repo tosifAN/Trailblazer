@@ -7,9 +7,7 @@ const GameContainer = styled.div`
   align-items: flex-start;
   padding: 20px;
   background: #f0f0f0;
-  min-height: 100vh;
-  width: 100%; // Add this
-`;
+  min-height: 10vh;`;
 
 
 const GameWrapper = styled.div`

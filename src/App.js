@@ -8,8 +8,8 @@ import PlayerForm from "./components/PlayerForm";
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-gradient-to-br from-indigo-600 to-purple-700">
-        <div className="container mx-auto px-4 py-8">
+      <div className="min-h-screen w-full bg-gradient-to-br from-indigo-600 to-purple-700 overflow-x-hidden">
+        <div className="mx-auto px-2 sm:px-4 py-8">
           {/* Header Section */}
           <div className="text-center mb-12">
             <h1 className="text-5xl md:text-6xl font-extrabold text-white mb-4 tracking-tight">
@@ -19,19 +19,19 @@ function App() {
           </div>
 
           {/* Main Content Container */}
-          <div className="max-w-7xl mx-auto">
+          <div className="w-full max-w-full mx-auto overflow-x-hidden">
             {/* Routes */}
-            <div className="transition-all duration-300 ease-in-out">
+            <div className="transition-all duration-300 ease-in-out overflow-x-hidden">
               <Routes>
                 <Route path="/" element={
-                  <div className="max-w-4xl mx-auto bg-white/10 backdrop-blur-lg rounded-xl shadow-2xl p-8">
+                  <div className="max-w-6xl mx-auto bg-white/10 backdrop-blur-lg rounded-xl shadow-2xl p-8">
                     <Menu />
                   </div>
                 } />
-                <Route path="/player-form" element={<PlayerForm/>} />
+                <Route path="/player-form" element={<PlayerForm />} />
                 <Route path="/game" element={<Game />} />
                 <Route path="/leaderboard" element={
-                  <div className="max-w-4xl mx-auto bg-white/10 backdrop-blur-lg rounded-xl shadow-2xl p-8">
+                  <div className="max-w-6xl mx-auto bg-white/10 backdrop-blur-lg rounded-xl shadow-2xl p-8">
                     <Leaderboard />
                   </div>
                 } />
