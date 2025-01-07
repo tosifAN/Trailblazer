@@ -39,6 +39,7 @@ class MazeScene extends Phaser.Scene {
     this.generateMaze();
     this.createPlayer();
     this.createDestination();
+    this.ensurePathToDestination();
     this.createControls();
     // Add audio
     this.gameMusic = this.sound.add('game_music', { loop: true });
@@ -173,8 +174,68 @@ class MazeScene extends Phaser.Scene {
       }
     }
 
+    // Add additional random paths to create multiple routes
+  for (let i = 1; i < gameOptions.mazeHeight - 1; i++) {
+    for (let j = 1; j < gameOptions.mazeWidth - 1; j++) {
+      if (this.maze[i][j] === 1 && Math.random() < 0.2) { // 20% chance to open a wall
+        this.maze[i][j] = 0;
+      }
+    }
+  }
     this.drawMaze();
   }
+
+  ensurePathToDestination() {
+    const visited = new Set();
+    const stack = [[1, 1]]; // Starting position
+    visited.add(`1,1`);
+  
+    while (stack.length > 0) {
+      const [x, y] = stack.pop();
+  
+      if (x === this.destination.y && y === this.destination.x) {
+        return; // Destination is reachable
+      }
+  
+      // Check all neighbors
+      const directions = [
+        [x + 1, y],
+        [x - 1, y],
+        [x, y + 1],
+        [x, y - 1],
+      ];
+  
+      for (const [nx, ny] of directions) {
+        if (
+          nx >= 0 &&
+          ny >= 0 &&
+          nx < gameOptions.mazeHeight &&
+          ny < gameOptions.mazeWidth &&
+          this.maze[nx][ny] === 0 &&
+          !visited.has(`${nx},${ny}`)
+        ) {
+          visited.add(`${nx},${ny}`);
+          stack.push([nx, ny]);
+        }
+      }
+    }
+  
+    // If no path, carve one directly
+    this.carvePathToDestination();
+  }
+  
+  carvePathToDestination() {
+    let [x, y] = [1, 1]; // Starting position
+    while (x !== this.destination.y || y !== this.destination.x) {
+      if (x < this.destination.y) x++;
+      else if (x > this.destination.y) x--;
+      else if (y < this.destination.x) y++;
+      else if (y > this.destination.x) y--;
+  
+      this.maze[x][y] = 0; // Carve the path
+    }
+  }
+
   drawMaze() {
     this.mazeGraphics.fillStyle(0x000000);
     for (let i = 0; i < gameOptions.mazeHeight; i++) {
