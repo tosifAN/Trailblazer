@@ -1,6 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import { DynamoDBClient, PutItemCommand, UpdateItemCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
+import AWS from 'aws-sdk';
 import cors from 'cors';
 
 const app = express();
@@ -19,6 +20,13 @@ const dynamoDBClient = new DynamoDBClient({
         secretAccessKey: 'x9S0iBsvgx2jAZ0t9JkC8tg+aNlYpI4y/UKsapPr', // Replace with your AWS secret key
     },
 });
+
+AWS.config.update({ 
+    region: 'us-east-1', // Replace with your AWS region
+    credentials: {
+        accessKeyId: 'AKIAXTORPF5KDT2CF6AU', // Replace with your AWS access key
+        secretAccessKey: 'x9S0iBsvgx2jAZ0t9JkC8tg+aNlYpI4y/UKsapPr', // Replace with your AWS secret key
+    }, });
 
 // POST endpoint
 app.post('/save-player', async (req, res) => {
@@ -129,6 +137,78 @@ app.put('/update-player/', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
+function extractObstaclePositions(response) {
+    // Get the text content from the response
+    const responseText = response.obstacles.outputs[0].text;
+
+    // Use a regular expression to extract all (x, y) positions
+    const positions = responseText.match(/\(\d+,\s*\d+\)/g);
+
+    // Return the extracted positions as an array of objects
+    return positions ? positions.map(position => {
+        const [x, y] = position.replace(/[()]/g, '').split(',').map(Number);
+        return { x, y };
+    }) : [];
+}
+
+// Utility function to create dynamic obstacles
+async function createDynamicObstacles(gameOptions, player, matrix) {
+    const bedrockRuntime = new AWS.BedrockRuntime();
+
+    const params = {
+        modelId: 'mistral.mistral-7b-instruct-v0:2',
+        contentType: 'application/json', // Content-Type header
+        accept: 'application/json',      // Accept header
+        body: JSON.stringify({
+            prompt: `<s>[INST] Do not write any additional text, only obstacle positions as a list of (x, y) coordinates.for a maze game in the format (x, y):
+                    - Maze size: ${gameOptions.mazeWidth}x${gameOptions.mazeHeight}
+                    - Current player position: (${player.posX}, ${player.posY})
+                    - 0 is a path and 1 is the wall
+                    - Ensure the path remains solvable
+                    - Existing maze matrix: ${JSON.stringify(matrix)}
+                    -  [/INST]</s>`,
+            max_tokens: 200,
+            temperature: 0.5,
+            top_p: 0.9,
+            top_k: 50,
+        }),
+    };
+    
+
+    try {
+        const response = await bedrockRuntime.invokeModel(params).promise();
+        const obstaclePattern = JSON.parse(response.body);
+        return obstaclePattern;
+    } catch (error) {
+        console.error('Error generating obstacles:', error);
+        return [];
+    }
+}
+
+// POST endpoint to generate dynamic obstacles
+app.post('/generate-obstacles', async (req, res) => {
+    try {
+        const { gameOptions, player, matrix } = req.body;
+
+        // Validate required fields
+        if (!gameOptions || !player || !gameOptions.mazeWidth || !gameOptions.mazeHeight || !player.posX || !player.posY) {
+            return res.status(400).json({ error: 'Missing required gameOptions or player data.' });
+        }
+
+        const obstacles = await createDynamicObstacles(gameOptions, player,matrix);
+        console.log(obstacles);
+        const obstaclePositions = extractObstaclePositions({obstacles});
+        res.status(200).json({ obstaclePositions });
+    } catch (error) {
+        console.error('Error generating dynamic obstacles:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
+
+
 
 // Start the server
 app.listen(PORT, () => {

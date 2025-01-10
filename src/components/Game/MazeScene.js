@@ -1,4 +1,6 @@
 import Phaser from 'phaser';
+import {getObstaclePositions} from './dynamicobstacles'
+
 
 const gameOptions = {
   mazeWidth: 29,  // Any odd number ≥ 7
@@ -17,7 +19,7 @@ class MazeScene extends Phaser.Scene {
 
   // Move audio loading to the preload method
   preload() {
-    this.load.audio('game_music', './game.mp3');  // Make sure path is correct
+    this.load.audio('game_music', 'https://mygameaws.s3.us-east-1.amazonaws.com/game.mp3');  // Make sure path is correct
   }
 
   // Add necessary class properties
@@ -41,6 +43,7 @@ class MazeScene extends Phaser.Scene {
     this.createDestination();
     this.ensurePathToDestination();
     this.createControls();
+    this.startObstacleUpdate();
     // Add audio
     this.gameMusic = this.sound.add('game_music', { loop: true });
 
@@ -94,7 +97,7 @@ class MazeScene extends Phaser.Scene {
 
     this.audioButton.on("pointerdown", onClick);
   }
-  generateMaze() {
+  async generateMaze() {
     const moves = [];
     this.maze = [];
     for (let i = 0; i < gameOptions.mazeHeight; i++) {
@@ -252,7 +255,7 @@ class MazeScene extends Phaser.Scene {
     }
   }
 
-  createPlayer() {
+  async createPlayer() {
     this.player = this.add.circle(
       gameOptions.tileSize * 1.5,
       gameOptions.tileSize * 1.5,
@@ -266,7 +269,11 @@ class MazeScene extends Phaser.Scene {
       x: gameOptions.mazeHeight - 2,
       y: gameOptions.mazeWidth - 2
     };
+
+    const obstacles = await getObstaclePositions(gameOptions, this.player, this.maze);
+    console.log("Obstacles:", obstacles);
   }
+  
 
   // Add this new method
   createDestination() {
@@ -498,6 +505,37 @@ class MazeScene extends Phaser.Scene {
       particles.destroy();
     });
   }
+
+  // Inside the MazeScene class
+async createSingleObstacle() {
+  // Get obstacle positions (but pick only one)
+  const obstacles = await getObstaclePositions(gameOptions, this.player, this.maze);
+  const obstacle = obstacles.obstaclePositions[0]; // Choose the first obstacle
+  console.log("Obstacle1:", obstacle);
+
+  // Place the new obstacle
+  this.currentObstacle = obstacle;
+  if(obstacle){
+    this.mazeGraphics.fillCircle(
+      obstacle.y * gameOptions.tileSize,
+      obstacle.x * gameOptions.tileSize,
+      gameOptions.tileSize,
+      gameOptions.tileSize
+    );  
+  }
+
+   // Redraw the maze to reflect the changes
+}
+
+// Call this function every 30 seconds
+startObstacleUpdate() {
+  this.time.addEvent({
+    delay: 10000, // 30 seconds
+    callback: this.createSingleObstacle,
+    callbackScope: this,
+    loop: true,
+  });
+}
 
 }
 
