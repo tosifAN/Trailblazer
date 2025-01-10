@@ -25,4 +25,4 @@ yarn-error.log*
 
 
 
-/my-lambda-function/node_modules
+/backend/node_modules

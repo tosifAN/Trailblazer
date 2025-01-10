@@ -5,23 +5,59 @@ import {getObstaclePositions} from './dynamicobstacles'
 const gameOptions = {
   mazeWidth: 29,  // Any odd number ≥ 7
   mazeHeight: 21, // Any odd number ≥ 7
-  tileSize: 30    // Adjust based on your display size
+  tileSize: 20    // Adjust based on your display size
 };
 
 class MazeScene extends Phaser.Scene {
   constructor() {
-    super({ key: 'PlayGame' });
+    super({ key: 'MazeScene' });
     this.isAudioResumed = false;
     this.isAudioPlaying = false; // Add a flag for audio state
-    
       }
 
 
-  // Move audio loading to the preload method
-  preload() {
-    this.load.audio('game_music', 'https://mygameaws.s3.us-east-1.amazonaws.com/game.mp3');  // Make sure path is correct
-  }
 
+    preload() {
+        // Change the background color to be lighter
+        const progressBox = this.add.graphics();
+        progressBox.fillStyle(0x2c3e50, 0.8);
+        progressBox.fillRect(240, 270, 320, 50);
+        
+        const progressBar = this.add.graphics();
+      
+        // Track progress more granularly
+        let progress = 0;
+        let currentProgress = 0;
+        const updateProgressBar = () => {
+            if (currentProgress < progress) {
+                currentProgress += 0.01;
+                progressBar.clear();
+                progressBar.fillStyle(0x3498db, 1);
+                progressBar.fillRect(250, 280, 300 * currentProgress, 30);
+                
+                requestAnimationFrame(updateProgressBar);
+            }
+        };
+        
+        this.load.on('progress', (value) => {
+            progress = value;
+            requestAnimationFrame(updateProgressBar);
+        });
+
+        this.load.on('complete', () => {
+          progressBar.destroy();
+          progressBox.destroy();
+      });
+        
+        // Make sure all your assets are loaded after setting up the progress bar
+        this.load.audio('game_music', 'https://mygameaws.s3.us-east-1.amazonaws.com/game.mp3', {
+            stream: true,
+            audioPlayType: 'webaudio'
+        });
+    }
+    
+
+  
   // Add necessary class properties
   init() {
 
@@ -44,6 +80,7 @@ class MazeScene extends Phaser.Scene {
     this.ensurePathToDestination();
     this.createControls();
     this.startObstacleUpdate();
+
     // Add audio
     this.gameMusic = this.sound.add('game_music', { loop: true });
 
@@ -508,24 +545,45 @@ class MazeScene extends Phaser.Scene {
 
   // Inside the MazeScene class
 async createSingleObstacle() {
-  // Get obstacle positions (but pick only one)
-  const obstacles = await getObstaclePositions(gameOptions, this.player, this.maze);
-  const obstacle = obstacles.obstaclePositions[0]; // Choose the first obstacle
-  console.log("Obstacle1:", obstacle);
+  try {
+    // Get obstacle positions (but pick only one)
+    const obstacles = await getObstaclePositions(gameOptions, this.player, this.maze);
+    
+    // Check if obstacles exist and have valid positions
+    if (!obstacles || !obstacles.obstaclePositions || !obstacles.obstaclePositions.length) {
+      console.log("No valid obstacles generated");
+      return;
+    }
 
-  // Place the new obstacle
-  this.currentObstacle = obstacle;
-  if(obstacle){
-    this.mazeGraphics.fillCircle(
-      obstacle.y * gameOptions.tileSize,
-      obstacle.x * gameOptions.tileSize,
-      gameOptions.tileSize,
-      gameOptions.tileSize
-    );  
+    const obstacle = obstacles.obstaclePositions[0]; // Choose the first obstacle
+    
+    // Validate obstacle object
+    if (!obstacle || typeof obstacle.x !== 'number' || typeof obstacle.y !== 'number') {
+      console.log("Invalid obstacle position");
+      return;
+    }
+
+    // Place the new obstacle
+    this.currentObstacle = obstacle;
+    
+    // Check if mazeGraphics exists before drawing
+    if (this.mazeGraphics && typeof this.mazeGraphics.fillCircle === 'function') {
+      this.mazeGraphics.fillCircle(
+        obstacle.y * gameOptions.tileSize,
+        obstacle.x * gameOptions.tileSize,
+        gameOptions.tileSize,
+        gameOptions.tileSize
+      );
+    }
+  } catch (error) {
+    // Log the error to console but don't show in UI
+    console.log("Error in createSingleObstacle:", error);
+    
+    // Optionally reset any state if needed
+    this.currentObstacle = null;
   }
-
-   // Redraw the maze to reflect the changes
 }
+
 
 // Call this function every 30 seconds
 startObstacleUpdate() {

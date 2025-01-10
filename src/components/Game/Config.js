@@ -16,7 +16,7 @@ export const Config = (gameContainerRef) => {
       height: gameHeight,
       parent: gameContainerRef.current,
       backgroundColor: '#ffffff',
-      scene: MazeScene,
+      scene: [MazeScene],
       callbacks: {
         postBoot: (game) => {
           console.log('Game booted', game);

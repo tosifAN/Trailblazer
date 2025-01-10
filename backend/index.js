@@ -9,23 +9,22 @@ const PORT = 8080;
 
 app.use(cors());
 
-// Middleware to parse JSON request bodies
 app.use(bodyParser.json());
 
 // DynamoDB client setup
 const dynamoDBClient = new DynamoDBClient({
     region: 'us-east-1', // Replace with your AWS region
     credentials: {
-        accessKeyId: 'AKIAXTORPF5KDT2CF6AU', // Replace with your AWS access key
-        secretAccessKey: 'x9S0iBsvgx2jAZ0t9JkC8tg+aNlYpI4y/UKsapPr', // Replace with your AWS secret key
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID, // Replace with your AWS access key
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY, // Replace with your AWS secret key
     },
 });
 
 AWS.config.update({ 
     region: 'us-east-1', // Replace with your AWS region
     credentials: {
-        accessKeyId: 'AKIAXTORPF5KDT2CF6AU', // Replace with your AWS access key
-        secretAccessKey: 'x9S0iBsvgx2jAZ0t9JkC8tg+aNlYpI4y/UKsapPr', // Replace with your AWS secret key
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID, // Replace with your AWS access key
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY, // Replace with your AWS secret key
     }, });
 
 // POST endpoint
@@ -197,7 +196,6 @@ app.post('/generate-obstacles', async (req, res) => {
         }
 
         const obstacles = await createDynamicObstacles(gameOptions, player,matrix);
-        console.log(obstacles);
         const obstaclePositions = extractObstaclePositions({obstacles});
         res.status(200).json({ obstaclePositions });
     } catch (error) {
@@ -205,10 +203,6 @@ app.post('/generate-obstacles', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-
-
-
-
 
 // Start the server
 app.listen(PORT, () => {
