@@ -2,27 +2,27 @@ import React, { useEffect, useRef, useState } from "react";
 import Phaser from "phaser";
 import { GameContainer, GameWrapper, StatItem, StatsPanel } from "./Style/GameContainer";
 import { formatTime } from "./FormatTime";
-import { Config} from "./Config";
+import { Config } from "./Config";
 import { updatePlayer } from "../../api/gameAPI";
 
-const PhaserMazeGame = ({ updatePlayerDetails })=> {
+const PhaserMazeGame = ({ updatePlayerDetails }) => {
   const gameContainerRef = useRef(null);
   const phaserGameRef = useRef(null);
-  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes
+  const [timeLeft, setTimeLeft] = useState(40); // 5 minutes
   const [isPaused, setIsPaused] = useState(false);
   const [gameOverMessage, setGameOverMessage] = useState('');
   const [currentLevel, setCurrentLevel] = useState(1);
   const timeLeftRef = useRef(timeLeft);
 
-useEffect(() => {
-  timeLeftRef.current = timeLeft; // Keep the ref updated with the latest state
-}, [timeLeft]);
+  useEffect(() => {
+    timeLeftRef.current = timeLeft; // Keep the ref updated with the latest state
+  }, [timeLeft]);
 
   useEffect(() => {
     handlePlayAgain();
     if (!phaserGameRef.current) {
       const config = Config(gameContainerRef);
-  
+
       // Add callback to listen for custom events
       config.callbacks = {
         ...config.callbacks,
@@ -31,10 +31,10 @@ useEffect(() => {
           game.events.on('playerWin', handlePlayerWin);
         },
       };
-  
+
       phaserGameRef.current = new Phaser.Game(config);
     }
-  
+
     return () => {
       if (phaserGameRef.current) {
         // Cleanup event listeners and destroy the Phaser game instance
@@ -45,7 +45,7 @@ useEffect(() => {
 
     };
   }, [currentLevel]);
-  
+
 
   // Timer effect
   useEffect(() => {
@@ -66,10 +66,7 @@ useEffect(() => {
   const handlePlayerWin = async () => {
     setIsPaused(true);
     setGameOverMessage("You Win! 🎉");
-    
-    console.log("Player time", timeLeftRef.current); // Access real-time value from the ref
 
-  
     const savedDetails = JSON.parse(localStorage.getItem("playerDetails"));
 
     const updatedDetails = {
@@ -77,10 +74,10 @@ useEffect(() => {
       PlayerLevel: currentLevel + 1,
       PlayerTime: savedDetails.PlayerTime + 300 - timeLeftRef.current,
     };
-  
+
     // Update player details in both localStorage and parent state
     updatePlayerDetails(updatedDetails);
-  
+
     if (savedDetails) {
       // Update PlatrueyerLevel and PlayerTime based on game state
       const updatedDetails = {
@@ -91,9 +88,7 @@ useEffect(() => {
 
       // Save updated details to localStorage
       localStorage.setItem("playerDetails", JSON.stringify(updatedDetails));
-  
-      console.log("Player details updated:", updatedDetails);
-      
+
       // Optionally update the player data on the server
       try {
         await updatePlayer(savedDetails.PlayerID, {
@@ -116,7 +111,7 @@ useEffect(() => {
         PlayerLevel: savedDetails.PlayerLevel, // Extract PlayerLevel from localStorage
         PlayerTime: savedDetails.PlayerTime + 300 - timeLeftRef.current,
       };
-  
+
       // Call updatePlayer with the extracted parameters
       await updatePlayer(playerID, requestBody);
     }
@@ -127,7 +122,7 @@ useEffect(() => {
   };
 
   const handlePlayAgain = () => {
-    setTimeLeft(300);
+    setTimeLeft(40);
     setGameOverMessage('');
     setIsPaused(false);
   };

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { savePlayer } from '../api/gameAPI';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { savePlayer } from "../api/gameAPI";
 
 // Move generatePlayerID outside component to avoid reference error
 const generatePlayerID = () => {
@@ -10,17 +10,15 @@ const generatePlayerID = () => {
 const PlayerForm = () => {
   const [formData, setFormData] = useState({
     PlayerID: generatePlayerID(),
-    PlayerEmailID: '',
-    PlayerName: '',
-    PlayerLevel: '1',
-    PlayerTime: '0',
+    PlayerEmailID: "",
+    PlayerName: "",
+    PlayerLevel: "1",
+    PlayerTime: "0",
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigate = useNavigate();
-
-  
 
   const validateEmail = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -29,24 +27,24 @@ const PlayerForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     // Validate email
     if (!validateEmail(formData.PlayerEmailID)) {
-      setError('Please enter a valid email address');
+      setError("Please enter a valid email address");
       return;
     }
 
     // Validate name
     if (!formData.PlayerName.trim()) {
-      setError('Please enter your name');
+      setError("Please enter your name");
       return;
     }
 
     // Validate PlayerLevel
     const level = parseInt(formData.PlayerLevel);
     if (isNaN(level) || level < 1 || level > 10) {
-      setError('Player level must be between 1 and 10');
+      setError("Player level must be between 1 and 10");
       return;
     }
     formData.PlayerLevel = String(level);
@@ -54,30 +52,31 @@ const PlayerForm = () => {
     // Validate PlayerTime
     const time = parseInt(formData.PlayerTime);
     if (isNaN(time) || time < 0) {
-      setError('Player time must be a non-negative number');
+      setError("Player time must be a non-negative number");
       return;
     }
     formData.PlayerTime = String(time);
-    
+
     try {
       setIsSubmitting(true);
       sessionStorage.removeItem("playerDetails");
-      localStorage.removeItem('playerDetails'); //remove existing player details
+      localStorage.removeItem("playerDetails"); //remove existing player details
       localStorage.setItem("playerDetails", JSON.stringify(formData));
       sessionStorage.setItem("playerDetails", JSON.stringify(formData));
+
       await savePlayer(
         formData.PlayerID,
-        formData.PlayerEmailID,  
+        formData.PlayerEmailID,
         formData.PlayerName,
         formData.PlayerLevel,
         formData.PlayerTime
       );
-      
+
       // Navigate to game with player info
-      navigate('/game');
+      navigate("/game");
     } catch (error) {
-      setError('Failed to register player. Please try again.');
-      console.error('Registration error:', error);
+      setError("Failed to register player. Please try again.");
+      console.error("Registration error:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -85,9 +84,9 @@ const PlayerForm = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -108,8 +107,8 @@ const PlayerForm = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Player Name Field */}
           <div>
-            <label 
-              htmlFor="PlayerName" 
+            <label
+              htmlFor="PlayerName"
               className="block text-white/80 text-sm font-medium mb-2"
             >
               Name
@@ -132,8 +131,8 @@ const PlayerForm = () => {
 
           {/* Email Field */}
           <div>
-            <label 
-              htmlFor="PlayerEmailID" 
+            <label
+              htmlFor="PlayerEmailID"
               className="block text-white/80 text-sm font-medium mb-2"
             >
               Email Address
@@ -169,18 +168,34 @@ const PlayerForm = () => {
                       focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2
                       focus:ring-offset-black transition-all duration-200
                       disabled:opacity-50 disabled:cursor-not-allowed
-                      ${isSubmitting ? 'animate-pulse' : ''}`}
+                      ${isSubmitting ? "animate-pulse" : ""}`}
           >
             {isSubmitting ? (
               <div className="flex items-center justify-center">
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
                 Registering...
               </div>
             ) : (
-              'Start Playing'
+              "Start Playing"
             )}
           </button>
         </form>

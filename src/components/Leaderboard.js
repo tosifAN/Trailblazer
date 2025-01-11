@@ -14,7 +14,6 @@ const Leaderboard = () => {
       try {
         const response = await fetchLeaderboard();
         const data = response;
-        console.log("Fetched leaderboard data:", data);
         setTopPlayers(data.topPlayers);
         setTotalPlayers(data.totalPlayers);
         setIsLoading(false);
@@ -44,7 +43,9 @@ const Leaderboard = () => {
           <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-300">
             Leaderboard
           </h1>
-          <p className="text-white/60 mt-2">Top players and their achievements</p>
+          <p className="text-white/60 mt-2">
+            Top players and their achievements
+          </p>
         </div>
 
         {/* Time Frame Filter */}
@@ -149,21 +150,27 @@ const Leaderboard = () => {
             </div>
           )}
         </div>
-         {/* Stats Summary */}
-         <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Stats Summary */}
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold text-purple-400">{totalPlayers}</div>
+            <div className="text-2xl font-bold text-purple-400">
+              {totalPlayers}
+            </div>
             <div className="text-white/60 text-sm">Total Players</div>
           </div>
           <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 text-center">
             <div className="text-2xl font-bold text-pink-400">
-              {topPlayers.length > 0 ? Math.max(...topPlayers.map(p => p.PlayerLevel)) : 0}
+              {topPlayers.length > 0
+                ? Math.max(...topPlayers.map((p) => p.PlayerLevel))
+                : 0}
             </div>
             <div className="text-white/60 text-sm">Highest Level</div>
           </div>
           <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 text-center">
             <div className="text-2xl font-bold text-yellow-400">
-            {topPlayers.length > 0 ? formatTime(topPlayers[0].PlayerTime) : "00:00"}
+              {topPlayers.length > 0
+                ? formatTime(topPlayers[0].PlayerTime)
+                : "00:00"}
             </div>
             <div className="text-white/60 text-sm">Best Time</div>
           </div>

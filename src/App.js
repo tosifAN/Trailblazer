@@ -1,5 +1,10 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import Menu from "./components/Menu";
 import Game from "./components/Game";
 import Leaderboard from "./components/Leaderboard";
@@ -23,18 +28,24 @@ function App() {
             {/* Routes */}
             <div className="transition-all duration-300 ease-in-out overflow-x-hidden">
               <Routes>
-                <Route path="/" element={
-                  <div className="max-w-6xl mx-auto bg-white/10 backdrop-blur-lg rounded-xl shadow-2xl p-8">
-                    <Menu />
-                  </div>
-                } />
+                <Route
+                  path="/"
+                  element={
+                    <div className="max-w-6xl mx-auto bg-white/10 backdrop-blur-lg rounded-xl shadow-2xl p-8">
+                      <Menu />
+                    </div>
+                  }
+                />
                 <Route path="/player-form" element={<PlayerForm />} />
                 <Route path="/game" element={<Game />} />
-                <Route path="/leaderboard" element={
-                  <div className="max-w-6xl mx-auto bg-white/10 backdrop-blur-lg rounded-xl shadow-2xl p-8">
-                    <Leaderboard />
-                  </div>
-                } />
+                <Route
+                  path="/leaderboard"
+                  element={
+                    <div className="max-w-6xl mx-auto bg-white/10 backdrop-blur-lg rounded-xl shadow-2xl p-8">
+                      <Leaderboard />
+                    </div>
+                  }
+                />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </div>
