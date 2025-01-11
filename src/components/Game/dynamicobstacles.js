@@ -12,7 +12,7 @@
 export async function getObstaclePositions(gameOptions, player, matrix) {
     try {
         // API endpoint
-        const apiUrl = "http://maze-game-code04.us-east-1.elasticbeanstalk.com/generate-obstacles";
+        const apiUrl = "https://6n3kiasb1i.execute-api.us-east-1.amazonaws.com/generate-obstacles";
 
         // Prepare the request body
         const requestBody = {
