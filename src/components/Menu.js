@@ -9,7 +9,7 @@ const Menu = () => {
       {/* Game Title */}
       <div className="text-center mb-12">
         <h1 className="text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-pink-300 mb-4">
-          Maze Game
+        Trailblazer
         </h1>
         <p className="text-base md:text-lg text-white/80 font-light">
           Navigate through challenging mazes and beat the clock!

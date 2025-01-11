@@ -42,7 +42,7 @@ function Game() {
           <div className="flex flex-wrap items-center justify-between">
             <div className="flex items-center">
               <h1 className="text-xl sm:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-300">
-                Maze Runner
+              Trailblazer
               </h1>
             </div>
             {/* Game Stats */}
