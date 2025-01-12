@@ -1,5 +1,5 @@
 # Maze Game Project
-
+Medium Article Link : https://medium.com/@tosif1355/developed-a-game-using-phaserjs-reactjs-expressjs-and-aws-services-9c6cfc6db661
 ## Overview
 The **Maze Game** project is a fun and interactive web-based game where users navigate through a maze. The project consists of two main components:
 
