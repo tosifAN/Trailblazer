@@ -1,5 +1,5 @@
 // API endpoints configuration
-const API_BASE_URL = 'https://6n3kiasb1i.execute-api.us-east-1.amazonaws.com';
+const API_BASE_URL = 'http://maze-game-backend-code05.us-east-1.elasticbeanstalk.com/';
 
 /**
  * Saves a new player's data to the server.

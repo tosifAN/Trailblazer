@@ -7,9 +7,20 @@ import cors from 'cors';
 const app = express();
 const PORT = 8080;
 
-app.use(cors());
+const corsOptions = {
+    origin: 'https://main.d2tuoguls1lw9z.amplifyapp.com', // Allow requests from your frontend only
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
+    allowedHeaders: ['Content-Type'], // Allow only the Content-Type header
+    credentials: true, // If you need cookies or credentials
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Preflight handling
+
+
 
 app.use(bodyParser.json());
+
 
 // DynamoDB client setup
 const dynamoDBClient = new DynamoDBClient({
